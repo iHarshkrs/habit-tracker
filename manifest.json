@@ -1,0 +1,38 @@
+{
+    "name": "JEE Habit Tracker",
+    "short_name": "JEE Tracker",
+    "description": "Daily habit tracking with sub-tasks and progress visualization for JEE preparation",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0f0f23",
+    "theme_color": "#6366f1",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "icons/icon-192.svg",
+            "sizes": "192x192",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "icons/icon-512.svg",
+            "sizes": "512x512",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ],
+    "categories": [
+        "productivity",
+        "education",
+        "utilities"
+    ],
+    "screenshots": [],
+    "shortcuts": [
+        {
+            "name": "View History",
+            "short_name": "History",
+            "description": "View your progress history",
+            "url": "/?view=history"
+        }
+    ]
+}

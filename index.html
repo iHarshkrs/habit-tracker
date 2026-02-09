@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="description" content="JEE Habit Tracker - Daily goals, sub-tasks, and progress tracking">
+
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="JEE Tracker">
+    <link rel="apple-touch-icon" href="icons/icon-192.svg">
+
+    <title>🎯 JEE Habit Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <h1 class="app-title">🎯 JEE Tracker</h1>
+                <button id="theme-toggle" class="icon-btn" aria-label="Toggle theme">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content (Home View) -->
+        <main class="main-content active">
+            <!-- Dashboard Section -->
+            <section class="dashboard">
+                <div class="greeting" id="greeting">Good morning! ☀️</div>
+                <div class="date-display" id="date-display"></div>
+
+                <!-- Progress Ring -->
+                <div class="progress-container">
+                    <div class="progress-ring-wrapper">
+                        <svg class="progress-ring" viewBox="0 0 120 120">
+                            <defs>
+                                <linearGradient id="progress-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#6366f1" />
+                                    <stop offset="100%" style="stop-color:#8b5cf6" />
+                                </linearGradient>
+                            </defs>
+                            <circle class="progress-ring-bg" cx="60" cy="60" r="52" />
+                            <circle class="progress-ring-fill" cx="60" cy="60" r="52" id="progress-circle" />
+                        </svg>
+                        <div class="progress-text">
+                            <span class="progress-percent" id="progress-percent">0%</span>
+                            <span class="progress-count" id="progress-count">0/0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Streak -->
+                <div class="total-streak" id="total-streak">
+                    <span class="streak-fire">🔥</span>
+                    <span class="streak-text">Best: <strong id="best-streak">0</strong> days</span>
+                </div>
+
+                <!-- Motivational Message -->
+                <div class="motivation-card" id="motivation-card">
+                    <p id="motivation-text">Start building your habits today!</p>
+                </div>
+            </section>
+
+            <!-- Habits Section -->
+            <section class="habits-section">
+                <div class="section-header">
+                    <h2>Today's Habits</h2>
+                    <button class="add-habit-btn" id="add-habit-btn">+ Add</button>
+                </div>
+
+                <div class="habits-list" id="habits-list">
+                    <!-- Habits rendered by JS -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Add Habit Modal -->
+        <div class="modal-overlay" id="add-habit-modal-overlay">
+            <div class="modal add-habit-modal">
+                <div class="modal-header">
+                    <h2>Add New Habit</h2>
+                    <button class="close-btn" id="close-add-habit-modal">&times;</button>
+                </div>
+
+                <div class="add-habit-form">
+                    <div class="form-group">
+                        <label>Habit Name</label>
+                        <input type="text" id="new-habit-name" placeholder="e.g., Meditation" maxlength="50">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Pick an Icon</label>
+                        <div class="icon-picker" id="icon-picker">
+                            <button type="button" class="icon-option selected" data-icon="📚">📚</button>
+                            <button type="button" class="icon-option" data-icon="💪">💪</button>
+                            <button type="button" class="icon-option" data-icon="🧘">🧘</button>
+                            <button type="button" class="icon-option" data-icon="🎯">🎯</button>
+                            <button type="button" class="icon-option" data-icon="✍️">✍️</button>
+                            <button type="button" class="icon-option" data-icon="🎨">🎨</button>
+                            <button type="button" class="icon-option" data-icon="🎵">🎵</button>
+                            <button type="button" class="icon-option" data-icon="🏃">🏃</button>
+                            <button type="button" class="icon-option" data-icon="🧠">🧠</button>
+                            <button type="button" class="icon-option" data-icon="💻">💻</button>
+                            <button type="button" class="icon-option" data-icon="📝">📝</button>
+                            <button type="button" class="icon-option" data-icon="🌟">🌟</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Pick a Color</label>
+                        <div class="color-picker" id="color-picker">
+                            <button type="button" class="color-option selected" data-color="#6366f1"
+                                style="background:#6366f1"></button>
+                            <button type="button" class="color-option" data-color="#8b5cf6"
+                                style="background:#8b5cf6"></button>
+                            <button type="button" class="color-option" data-color="#ec4899"
+                                style="background:#ec4899"></button>
+                            <button type="button" class="color-option" data-color="#ef4444"
+                                style="background:#ef4444"></button>
+                            <button type="button" class="color-option" data-color="#f59e0b"
+                                style="background:#f59e0b"></button>
+                            <button type="button" class="color-option" data-color="#10b981"
+                                style="background:#10b981"></button>
+                            <button type="button" class="color-option" data-color="#06b6d4"
+                                style="background:#06b6d4"></button>
+                            <button type="button" class="color-option" data-color="#3b82f6"
+                                style="background:#3b82f6"></button>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary btn-full" id="save-new-habit">Create Habit</button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- History View -->
+        <section class="history-view" id="history-view">
+            <div class="history-header">
+                <h2>📊 Your Progress</h2>
+            </div>
+
+            <!-- Yesterday Summary -->
+            <div class="history-section">
+                <h3>📅 Yesterday</h3>
+                <div class="yesterday-card" id="yesterday-summary">
+                    <!-- Rendered by JS -->
+                </div>
+            </div>
+
+            <!-- Weekly Chart -->
+            <div class="history-section">
+                <h3>📈 This Week</h3>
+                <div class="weekly-chart-container">
+                    <div class="weekly-chart" id="weekly-chart">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tips Section -->
+            <div class="history-section tips-section">
+                <h3>💡 JEE Tips</h3>
+                <div class="tip-card">
+                    <p>Focus on one chapter at a time. Quality > Quantity!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Subtask Modal -->
+        <div class="modal-overlay" id="subtask-modal-overlay">
+            <div class="modal subtask-modal" id="subtask-modal">
+                <div class="modal-header">
+                    <h2 id="subtask-habit-name">Habit Name</h2>
+                    <button class="close-btn" id="close-subtask-modal" aria-label="Close">&times;</button>
+                </div>
+
+                <!-- Habit Progress Chart -->
+                <div class="habit-chart-section">
+                    <h4>📈 7-Day Progress</h4>
+                    <div class="habit-mini-chart" id="habit-mini-chart">
+                        <!-- Chart rendered by JS -->
+                    </div>
+                    <div class="habit-stats">
+                        <span class="stat">🔥 Streak: <strong id="habit-streak">0</strong></span>
+                        <span class="stat">⭐ Best: <strong id="habit-best-streak">0</strong></span>
+                        <span class="stat">📊 Avg: <strong id="habit-avg">0%</strong></span>
+                    </div>
+                </div>
+
+                <div class="subtask-list-container">
+                    <h4>📋 Today's Tasks</h4>
+                    <div class="subtask-list" id="subtask-list">
+                        <!-- Subtasks rendered by JS -->
+                    </div>
+                </div>
+
+                <div class="add-subtask-container">
+                    <input type="text" id="new-subtask-input" placeholder="Add new task..." maxlength="100">
+                    <button id="add-subtask-btn" class="btn btn-primary">+</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notification Toast -->
+        <div class="toast" id="notification-toast">
+            <p>🔔 Enable notifications for daily reminders?</p>
+            <div class="toast-actions">
+                <button class="btn btn-small btn-secondary" id="dismiss-toast">Later</button>
+                <button class="btn btn-small btn-primary" id="enable-notifications">Enable</button>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav" id="bottom-nav">
+            <button class="nav-item active" data-view="home" id="nav-home">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-label">Home</span>
+            </button>
+            <button class="nav-item" data-view="history" id="nav-history">
+                <span class="nav-icon">📊</span>
+                <span class="nav-label">History</span>
+            </button>
+        </nav>
+    </div>
+
+    <script src="app.js"></script>
+    <!-- 🧪 TEMPORARY: Remove this line after viewing demo data -->
+    <script src="generate-dummy-data.js"></script>
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+        // Register Service Worker for offline functionality
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then((registration) => {
+                        console.log('✅ Service Worker registered:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.log('❌ Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+
+</html>
