@@ -3,7 +3,7 @@
    Enables offline functionality for PWA
    ============================================ */
 
-const CACHE_NAME = 'jee-tracker-v1';
+const CACHE_NAME = 'jee-tracker-v2';
 const OFFLINE_URL = '/';
 
 // Files to cache for offline use
