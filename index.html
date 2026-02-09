@@ -202,7 +202,10 @@
             <div class="modal subtask-modal" id="subtask-modal">
                 <div class="modal-header">
                     <h2 id="subtask-habit-name">Habit Name</h2>
-                    <button class="close-btn" id="close-subtask-modal" aria-label="Close">&times;</button>
+                    <div class="modal-header-actions">
+                        <button class="delete-habit-btn" id="delete-habit-btn" aria-label="Delete habit">🗑️</button>
+                        <button class="close-btn" id="close-subtask-modal" aria-label="Close">&times;</button>
+                    </div>
                 </div>
 
                 <!-- Habit Progress Chart -->
@@ -228,6 +231,22 @@
                 <div class="add-subtask-container">
                     <input type="text" id="new-subtask-input" placeholder="Add new task..." maxlength="100">
                     <button id="add-subtask-btn" class="btn btn-primary">+</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div class="modal-overlay" id="delete-confirm-modal-overlay">
+            <div class="modal delete-confirm-modal">
+                <div class="delete-confirm-content">
+                    <div class="delete-confirm-icon">⚠️</div>
+                    <h3>Delete Habit?</h3>
+                    <p id="delete-confirm-text">This will permanently delete this habit and all its history. This cannot
+                        be undone.</p>
+                    <div class="delete-confirm-actions">
+                        <button class="btn btn-secondary" id="cancel-delete-btn">Cancel</button>
+                        <button class="btn btn-danger" id="confirm-delete-btn">Delete</button>
+                    </div>
                 </div>
             </div>
         </div>

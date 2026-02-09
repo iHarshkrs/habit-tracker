@@ -736,7 +736,14 @@ class UIController {
             nextDayBtn: document.getElementById('next-day-btn'),
             selectedDate: document.getElementById('selected-date'),
             pastDaySummary: document.getElementById('past-day-summary'),
-            incompleteTasksList: document.getElementById('incomplete-tasks-list')
+            incompleteTasksList: document.getElementById('incomplete-tasks-list'),
+
+            // Delete Habit Confirmation Modal
+            deleteHabitBtn: document.getElementById('delete-habit-btn'),
+            deleteConfirmModalOverlay: document.getElementById('delete-confirm-modal-overlay'),
+            deleteConfirmText: document.getElementById('delete-confirm-text'),
+            cancelDeleteBtn: document.getElementById('cancel-delete-btn'),
+            confirmDeleteBtn: document.getElementById('confirm-delete-btn')
         };
     }
 
@@ -800,11 +807,20 @@ class UIController {
         this.elements.prevDayBtn?.addEventListener('click', () => this.navigatePastDay(-1));
         this.elements.nextDayBtn?.addEventListener('click', () => this.navigatePastDay(1));
 
+        // Delete Habit
+        this.elements.deleteHabitBtn?.addEventListener('click', () => this.showDeleteConfirmation());
+        this.elements.cancelDeleteBtn?.addEventListener('click', () => this.hideDeleteConfirmation());
+        this.elements.confirmDeleteBtn?.addEventListener('click', () => this.confirmDeleteHabit());
+        this.elements.deleteConfirmModalOverlay?.addEventListener('click', (e) => {
+            if (e.target === this.elements.deleteConfirmModalOverlay) this.hideDeleteConfirmation();
+        });
+
         // Keyboard
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 this.closeSubtaskModal();
                 this.closeAddHabitModal();
+                this.hideDeleteConfirmation();
             }
         });
     }
@@ -1382,6 +1398,60 @@ class UIController {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    // ============================================
+    // DELETE HABIT FUNCTIONALITY
+    // ============================================
+
+    showDeleteConfirmation() {
+        if (!this.expandedHabit) return;
+
+        const habit = this.habitManager.getById(this.expandedHabit);
+        if (!habit) return;
+
+        // Update confirmation text with habit name
+        if (this.elements.deleteConfirmText) {
+            this.elements.deleteConfirmText.textContent =
+                `This will permanently delete "${habit.name}" and all its history. This cannot be undone.`;
+        }
+
+        this.elements.deleteConfirmModalOverlay?.classList.add('active');
+    }
+
+    hideDeleteConfirmation() {
+        this.elements.deleteConfirmModalOverlay?.classList.remove('active');
+    }
+
+    confirmDeleteHabit() {
+        if (!this.expandedHabit) return;
+
+        const habitId = this.expandedHabit;
+        const habit = this.habitManager.getById(habitId);
+
+        // Delete the habit from habit manager
+        this.habitManager.deleteHabit(habitId);
+
+        // Remove habit data from today's record
+        const today = DateUtils.getToday();
+        const record = this.dailyManager.records[today];
+        if (record && record.habits[habitId]) {
+            delete record.habits[habitId];
+            this.dailyManager.recalculateOverall();
+            this.dailyManager.save();
+        }
+
+        // Close modals
+        this.hideDeleteConfirmation();
+        this.closeSubtaskModal();
+
+        // Re-render UI
+        this.render();
+
+        // Vibrate feedback
+        if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
+
+        console.log(`🗑️ Deleted habit: ${habit?.name || habitId}`);
     }
 }
 

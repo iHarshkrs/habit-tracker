@@ -1381,3 +1381,82 @@ body {
     padding: var(--spacing-xl);
     color: var(--text-muted);
 }
+
+/* ============================================
+   DELETE HABIT BUTTON & CONFIRMATION MODAL
+   ============================================ */
+
+.modal-header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.delete-habit-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: var(--radius-full);
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.delete-habit-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    transform: scale(1.1);
+}
+
+.delete-confirm-modal {
+    border-radius: var(--radius-xl);
+    max-width: 360px;
+    margin: auto;
+}
+
+.delete-confirm-content {
+    padding: var(--spacing-xl);
+    text-align: center;
+}
+
+.delete-confirm-icon {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.delete-confirm-content h3 {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-primary);
+}
+
+.delete-confirm-content p {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-xl);
+    line-height: 1.5;
+}
+
+.delete-confirm-actions {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.delete-confirm-actions .btn {
+    flex: 1;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+}
