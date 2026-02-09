@@ -670,6 +670,7 @@ class UIController {
 
         this.currentView = 'home';
         this.expandedHabit = null;
+        this.browsedDate = DateUtils.getYesterday(); // For past day browser
 
         this.cacheElements();
         this.bindEvents();
@@ -728,7 +729,14 @@ class UIController {
             habitMiniChart: document.getElementById('habit-mini-chart'),
             habitStreak: document.getElementById('habit-streak'),
             habitBestStreak: document.getElementById('habit-best-streak'),
-            habitAvg: document.getElementById('habit-avg')
+            habitAvg: document.getElementById('habit-avg'),
+
+            // Past Day Browser
+            prevDayBtn: document.getElementById('prev-day-btn'),
+            nextDayBtn: document.getElementById('next-day-btn'),
+            selectedDate: document.getElementById('selected-date'),
+            pastDaySummary: document.getElementById('past-day-summary'),
+            incompleteTasksList: document.getElementById('incomplete-tasks-list')
         };
     }
 
@@ -787,6 +795,10 @@ class UIController {
                 btn.classList.add('selected');
             });
         });
+
+        // Past Day Browser Navigation
+        this.elements.prevDayBtn?.addEventListener('click', () => this.navigatePastDay(-1));
+        this.elements.nextDayBtn?.addEventListener('click', () => this.navigatePastDay(1));
 
         // Keyboard
         document.addEventListener('keydown', (e) => {
@@ -1149,6 +1161,7 @@ class UIController {
     renderHistory() {
         this.renderYesterdaySummary();
         this.renderWeeklyChart();
+        this.renderPastDayBrowser();
     }
 
     renderYesterdaySummary() {
@@ -1205,6 +1218,152 @@ class UIController {
         }).join('');
     }
 
+    // ============================================
+    // PAST DAY BROWSER
+    // ============================================
+
+    navigatePastDay(direction) {
+        const currentDate = new Date(this.browsedDate);
+        currentDate.setDate(currentDate.getDate() + direction);
+
+        const today = DateUtils.getToday();
+        const minDate = DateUtils.getDaysAgo(60);
+        const newDate = currentDate.toISOString().split('T')[0];
+
+        // Don't go into the future or beyond 60 days ago
+        if (newDate >= today || newDate < minDate) return;
+
+        this.browsedDate = newDate;
+        this.renderPastDayBrowser();
+
+        // Vibrate feedback
+        if (navigator.vibrate) navigator.vibrate(30);
+    }
+
+    renderPastDayBrowser() {
+        if (!this.elements.selectedDate) return;
+
+        // Format date for display
+        const date = new Date(this.browsedDate + 'T00:00:00');
+        const displayDate = date.toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric'
+        });
+        this.elements.selectedDate.textContent = displayDate;
+
+        // Get record for this date
+        const record = this.dailyManager.getRecord(this.browsedDate);
+
+        // Update navigation buttons
+        const today = DateUtils.getToday();
+        const yesterday = DateUtils.getYesterday();
+        const minDate = DateUtils.getDaysAgo(59);
+
+        if (this.elements.nextDayBtn) {
+            this.elements.nextDayBtn.disabled = this.browsedDate >= yesterday;
+        }
+        if (this.elements.prevDayBtn) {
+            this.elements.prevDayBtn.disabled = this.browsedDate <= minDate;
+        }
+
+        // Render summary
+        if (this.elements.pastDaySummary) {
+            if (record) {
+                this.elements.pastDaySummary.innerHTML = `
+                    <div class="past-day-percent">${record.overallPercent}%</div>
+                    <div class="past-day-label">completed on this day</div>
+                `;
+            } else {
+                this.elements.pastDaySummary.innerHTML = `
+                    <p class="hint-text">No data for this day</p>
+                `;
+            }
+        }
+
+        // Get incomplete tasks
+        const incompleteTasks = this.getIncompleteTasksFromDay(this.browsedDate);
+
+        // Render incomplete tasks
+        if (this.elements.incompleteTasksList) {
+            if (incompleteTasks.length === 0 && record) {
+                this.elements.incompleteTasksList.innerHTML = `
+                    <div class="no-incomplete-tasks">
+                        <div class="success-icon">✅</div>
+                        <p>All tasks completed!</p>
+                    </div>
+                `;
+            } else if (incompleteTasks.length === 0) {
+                this.elements.incompleteTasksList.innerHTML = '';
+            } else {
+                this.elements.incompleteTasksList.innerHTML = `
+                    <div class="incomplete-tasks-header">
+                        <span>⚠️</span> Incomplete Tasks (${incompleteTasks.length})
+                    </div>
+                    ${incompleteTasks.map(task => `
+                        <div class="incomplete-task-card">
+                            <div class="incomplete-task-info">
+                                <div class="incomplete-task-habit">
+                                    <span>${task.habitIcon}</span>
+                                    <span>${this.escapeHtml(task.habitName)}</span>
+                                </div>
+                                <div class="incomplete-task-title">${this.escapeHtml(task.title)}</div>
+                            </div>
+                            <button class="reschedule-btn" 
+                                    onclick="app.rescheduleTask('${task.habitId}', '${this.escapeHtml(task.title).replace(/'/g, "\\'")}')">+ Today</button>
+                        </div>
+                    `).join('')}
+                `;
+            }
+        }
+    }
+
+    getIncompleteTasksFromDay(dateStr) {
+        const record = this.dailyManager.getRecord(dateStr);
+        if (!record) return [];
+
+        const incompleteTasks = [];
+        const habits = this.habitManager.getAll();
+
+        Object.keys(record.habits).forEach(habitId => {
+            const habitData = record.habits[habitId];
+            const habit = habits.find(h => h.id === habitId);
+
+            if (!habit || !habitData.subtasks) return;
+
+            habitData.subtasks.forEach(subtask => {
+                if (!subtask.done && subtask.progress < 100) {
+                    incompleteTasks.push({
+                        habitId: habit.id,
+                        habitName: habit.name,
+                        habitIcon: habit.icon,
+                        title: subtask.title,
+                        progress: subtask.progress
+                    });
+                }
+            });
+        });
+
+        return incompleteTasks;
+    }
+
+    rescheduleTask(habitId, taskTitle) {
+        // Add the task to today's habit
+        const newSubtask = this.dailyManager.addSubtask(habitId, taskTitle);
+
+        if (newSubtask) {
+            // Show feedback
+            alert(`✅ "${taskTitle}" added to today's tasks!`);
+
+            // Re-render
+            this.render();
+            this.renderPastDayBrowser();
+
+            // Vibrate feedback
+            if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
+        }
+    }
+
     checkNotifications() {
         if (this.notificationManager.shouldAskPermission()) {
             setTimeout(() => this.showNotificationToast(), 3000);
@@ -1253,5 +1412,6 @@ window.app = {
     openHabitDetail: (id) => app?.openHabitDetail(id),
     toggleSubtask: (habitId, subtaskId) => app?.toggleSubtask(habitId, subtaskId),
     updateSubtaskProgress: (habitId, subtaskId, value) => app?.updateSubtaskProgress(habitId, subtaskId, value),
-    deleteSubtask: (habitId, subtaskId) => app?.deleteSubtask(habitId, subtaskId)
+    deleteSubtask: (habitId, subtaskId) => app?.deleteSubtask(habitId, subtaskId),
+    rescheduleTask: (habitId, taskTitle) => app?.rescheduleTask(habitId, taskTitle)
 };

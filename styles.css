@@ -1223,3 +1223,161 @@ body {
 .btn-full {
     width: 100%;
 }
+
+/* ============================================
+   PAST DAY BROWSER
+   ============================================ */
+
+.past-day-section {
+    margin-top: var(--spacing-lg);
+}
+
+.past-day-browser {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.date-navigator {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-md);
+    background: var(--gradient-primary);
+    color: white;
+}
+
+.nav-arrow {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-full);
+    color: white;
+    font-size: var(--font-size-xl);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-arrow:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.nav-arrow:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.selected-date {
+    font-weight: 600;
+    font-size: var(--font-size-md);
+    text-align: center;
+}
+
+.past-day-summary {
+    padding: var(--spacing-md);
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.past-day-summary .hint-text {
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+}
+
+.past-day-percent {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.past-day-label {
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+}
+
+.incomplete-tasks-list {
+    padding: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.incomplete-tasks-header {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.incomplete-task-card {
+    background: var(--bg-primary);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+}
+
+.incomplete-task-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.incomplete-task-habit {
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.incomplete-task-title {
+    font-weight: 500;
+    font-size: var(--font-size-sm);
+    word-break: break-word;
+}
+
+.reschedule-btn {
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+}
+
+.reschedule-btn:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-md);
+}
+
+.no-incomplete-tasks {
+    text-align: center;
+    padding: var(--spacing-lg);
+    color: var(--text-muted);
+}
+
+.no-incomplete-tasks .success-icon {
+    font-size: 2rem;
+    margin-bottom: var(--spacing-sm);
+}
+
+.past-day-empty {
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--text-muted);
+}
